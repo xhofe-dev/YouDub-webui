@@ -98,9 +98,11 @@ Common system dependency examples:
 
 ```powershell
 # Windows PowerShell (choose a package manager already available on your machine)
-winget install Gyan.FFmpeg
+winget install Gyan.FFmpeg.Shared
 winget install OpenJS.NodeJS.LTS
 ```
+
+On Windows, install a shared/full-shared FFmpeg build. After installation, confirm that `ffmpeg -version` and `ffprobe -version` work and that the FFmpeg DLL directory is available on `PATH`; otherwise the audio separation stage may fail to load the TorchCodec/FFmpeg runtime libraries.
 
 ```bash
 # Ubuntu / Debian / WSL2

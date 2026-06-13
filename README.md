@@ -98,9 +98,11 @@ https://github.com/user-attachments/assets/158de60a-7de4-4ddf-b3d8-478d0423aee6
 
 ```powershell
 # Windows PowerShell（任选你本机已有的包管理器）
-winget install Gyan.FFmpeg
+winget install Gyan.FFmpeg.Shared
 winget install OpenJS.NodeJS.LTS
 ```
+
+Windows 上建议安装 FFmpeg 的 shared/full-shared 版本；安装后请确认 `ffmpeg -version` 和 `ffprobe -version` 可用，并且 FFmpeg 的 DLL 目录在 `PATH` 中，否则音频分离阶段可能无法加载 TorchCodec/FFmpeg 运行库。
 
 ```bash
 # Ubuntu / Debian / WSL2
