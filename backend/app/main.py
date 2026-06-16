@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel
 
 from . import database, worker
-from .adapters.local_subtitles import uploaded_subtitle_dir
+from .adapters.local_subtitles import parse_srt, uploaded_subtitle_dir
 from .adapters.local_video import remove_upload, uploaded_video_dir
 from .adapters.openai_translate import list_models as list_openai_models
 from .config import WORKFOLDER, YOUTUBE_COOKIE_PATH, ensure_runtime_dirs
@@ -205,6 +205,15 @@ def _save_uploaded_file(file: UploadFile, destination: Path, *, max_bytes: int, 
     return total
 
 
+def _validate_uploaded_srt(path: Path) -> None:
+    try:
+        parse_srt(path.read_text(encoding="utf-8-sig"))
+    except UnicodeDecodeError as exc:
+        raise HTTPException(status_code=400, detail="Invalid SRT subtitle file encoding.") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid SRT subtitle file: {exc}") from exc
+
+
 @app.post("/api/tasks/upload", status_code=201)
 def upload_local_video(
     direction: str = Form("en-zh"),
@@ -227,12 +236,14 @@ def upload_local_video(
         )
         if subtitle_file is not None and subtitle_file.filename:
             subtitle_name = _clean_subtitle_filename(subtitle_file.filename)
+            subtitle_path = uploaded_subtitle_dir(WORKFOLDER, task_id) / subtitle_name
             _save_uploaded_file(
                 subtitle_file,
-                uploaded_subtitle_dir(WORKFOLDER, task_id) / subtitle_name,
+                subtitle_path,
                 max_bytes=MAX_LOCAL_SUBTITLE_BYTES,
                 too_large_detail="Uploaded subtitle is too large.",
             )
+            _validate_uploaded_srt(subtitle_path)
     except HTTPException:
         remove_upload(WORKFOLDER, task_id)
         raise

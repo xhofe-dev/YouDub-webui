@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import json
 import sys
 import types
 from pathlib import Path
 
 from backend.app import database
 from backend.app import pipeline
-from backend.app.adapters import local_subtitles
 from backend.app.pipeline import PipelineRunner
 
 
@@ -200,11 +200,15 @@ def test_pipeline_uses_uploaded_srt_and_skips_model_stages(monkeypatch, tmp_path
     session = tmp_path / "session"
     for directory in ("media", "metadata", "segments/vocals", "segments/tts", "tmp"):
         (session / directory).mkdir(parents=True, exist_ok=True)
-    subtitle_dir = local_subtitles.uploaded_subtitle_dir(tmp_path, task_id)
-    subtitle_dir.mkdir(parents=True)
-    (subtitle_dir / "clip.zh.srt").write_text(
+    subtitle_file = tmp_path / "uploaded" / "clip.zh.srt"
+    subtitle_file.parent.mkdir(parents=True)
+    subtitle_file.write_text(
         "1\n00:00:00,000 --> 00:00:01,000\n你好\n\n"
         "2\n00:00:01,200 --> 00:00:02,000\n世界\n",
+        encoding="utf-8",
+    )
+    (session / "metadata" / "local_info.json").write_text(
+        json.dumps({"subtitle_path": str(subtitle_file)}),
         encoding="utf-8",
     )
 

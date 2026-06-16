@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import traceback
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,7 +13,7 @@ from .devices import device_plan_summary
 from .runtime_checks import validate_runtime_device
 from .sources import detect_source
 from .stages import STAGES
-from .youtube import is_local_upload_url, local_upload_task_id
+from .youtube import is_local_upload_url
 
 
 @dataclass
@@ -138,12 +139,25 @@ class PipelineRunner:
                 return entry["status"]
         return None
 
+    def _local_info(self) -> dict | None:
+        session = self.artifacts.session
+        if not session:
+            return None
+        metadata_file = session / "metadata" / "local_info.json"
+        if not metadata_file.exists():
+            return None
+        return json.loads(metadata_file.read_text(encoding="utf-8"))
+
     def _uploaded_subtitle_path(self, task: dict) -> Path | None:
         if not is_local_upload_url(task["url"]):
             return None
-        from .adapters.local_subtitles import uploaded_subtitle_file
-
-        return uploaded_subtitle_file(WORKFOLDER, local_upload_task_id(task["url"]))
+        info = self._local_info()
+        if not info:
+            return None
+        subtitle_path = str(info.get("subtitle_path") or "").strip()
+        if not subtitle_path:
+            return None
+        return _require_existing(Path(subtitle_path), "uploaded_subtitle_file")
 
     def _write_uploaded_subtitle_artifacts(self, task: dict) -> tuple[Path, Path, Path]:
         from .adapters.local_subtitles import write_uploaded_subtitle_artifacts

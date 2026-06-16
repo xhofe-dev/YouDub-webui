@@ -581,6 +581,28 @@ def test_upload_local_video_rejects_non_srt_subtitle(monkeypatch, tmp_path):
     assert response.json()["detail"] == "Only .srt subtitle files are supported."
 
 
+def test_upload_local_video_rejects_malformed_srt_and_cleans_upload(monkeypatch, tmp_path):
+    configure_tmp_runtime(monkeypatch, tmp_path)
+    enqueued: list[str] = []
+    monkeypatch.setattr(main.worker, "enqueue", lambda task_id: enqueued.append(task_id))
+    client = TestClient(main.app)
+
+    response = client.post(
+        "/api/tasks/upload",
+        data={"direction": "en-zh"},
+        files={
+            "file": ("clip.mp4", b"mp4data", "video/mp4"),
+            "subtitle_file": ("broken.srt", b"not an srt file", "application/x-subrip"),
+        },
+    )
+
+    assert response.status_code == 400
+    assert "Invalid SRT subtitle file" in response.json()["detail"]
+    assert enqueued == []
+    assert database.list_tasks() == []
+    assert not any((config.WORKFOLDER / "_uploads").glob("*"))
+
+
 def test_create_task_rejects_local_upload_url(monkeypatch, tmp_path):
     configure_tmp_runtime(monkeypatch, tmp_path)
     client = TestClient(main.app)
