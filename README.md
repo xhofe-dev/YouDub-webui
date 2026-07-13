@@ -395,11 +395,11 @@ YouDub WebUI 仍然是 MVP，但已经可以支撑真实创作者的日常视频
 
 薪资范围：**30–60K × 13 薪**。
 
+简历投递：[liuzhao@xiaoluxue.com](mailto:liuzhao@xiaoluxue.com)
+
 <p align="center">
   <img src="apps/web/public/recruitment-poster-2026.jpg" alt="YouDub 人才招聘海报：全栈研发工程师与高级 Go 后端架构师" width="680" />
 </p>
-
-简历投递：[liuzhao@xiaoluxue.com](mailto:liuzhao@xiaoluxue.com)
 
 ## 社区交流
 
