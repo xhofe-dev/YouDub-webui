@@ -2,7 +2,7 @@
   <img src="apps/web/public/youdub-logo.svg" alt="YouDub" width="520" />
 </p>
 
-# YouDub WebUI
+# YouDub WebUI | [人才招聘](#人才招聘)
 
 <p align="center">
   <strong>QQ 交流群：618246010</strong>
@@ -385,6 +385,21 @@ YouDub WebUI 仍然是 MVP，但已经可以支撑真实创作者的日常视频
 - 补充不同平台的运行说明。
 
 如果这个项目对你有帮助，欢迎 Star、Fork、提交 Issue 或 PR，也欢迎分享给关注 AI 视频本地化、开源工具和跨语言内容传播的人。
+
+## 人才招聘
+
+我们正在北京海淀区中关村招聘以下岗位：
+
+- 全栈研发工程师
+- 高级 Go 后端架构师（内容平台 / 长任务编排 / AI Agent Runtime）
+
+薪资范围：**30–60K × 13 薪**。
+
+<p align="center">
+  <img src="apps/web/public/recruitment-poster-2026.jpg" alt="YouDub 人才招聘海报：全栈研发工程师与高级 Go 后端架构师" width="680" />
+</p>
+
+简历投递：[liuzhao@xiaoluxue.com](mailto:liuzhao@xiaoluxue.com)
 
 ## 社区交流
 
