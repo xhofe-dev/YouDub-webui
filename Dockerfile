@@ -26,7 +26,6 @@ FROM python:${PYTHON_VERSION}-bookworm AS runtime
 
 ARG WITH_CUDA=0
 ARG PIP_INDEX_URL=https://pypi.org/simple
-ARG NODE_VERSION=22
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -39,7 +38,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     YOUDUB_AUTH_COOKIE_SECURE=false \
     YOUDUB_AUTH_COOKIE_SAMESITE=strict
 
-COPY --from=node:${NODE_VERSION}-bookworm-slim /usr/local /usr/local
+# Reuse Node from web-builder (--from does not support ${VAR} expansion).
+COPY --from=web-builder /usr/local /usr/local
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
