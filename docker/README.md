@@ -9,7 +9,8 @@
 **构建 / 运行：**
 
 ```bash
-# CPU：务必在 .env 里设 DEVICE=cpu（示例默认是 cuda，会覆盖镜像默认值）
+# CPU：务必 DEVICE=cpu（示例 .env 默认是 cuda，会盖掉镜像默认值）
+# Apple Silicon 请用原生 arm64，不要强拉 amd64（否则 NumPy 易在仿真里挂）。
 docker build -t youdub-webui .
 docker run --rm -p 3000:3000 --env-file .env -e DEVICE=cpu \
   -v "$PWD/workfolder:/app/workfolder" \

@@ -38,8 +38,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     YOUDUB_AUTH_COOKIE_SECURE=false \
     YOUDUB_AUTH_COOKIE_SAMESITE=strict
 
-# Reuse Node from web-builder (--from does not support ${VAR} expansion).
-COPY --from=web-builder /usr/local /usr/local
+# Install Node beside Python — never COPY node’s /usr/local over the Python image.
+COPY --from=web-builder /usr/local/bin/node /opt/node/bin/node
+COPY --from=web-builder /usr/local/lib/node_modules /opt/node/lib/node_modules
+RUN ln -sf /opt/node/lib/node_modules/npm/bin/npm-cli.js /opt/node/bin/npm \
+ && ln -sf /opt/node/lib/node_modules/npm/bin/npx-cli.js /opt/node/bin/npx
+ENV PATH="/opt/node/bin:${PATH}"
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -53,11 +57,15 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt requirements-pytorch-cu128.txt ./
+# Pin numpy below 2.2: manylinux x86_64 wheels for 2.2+ need x86-64-v2 (breaks
+# older CPUs / some Docker Desktop amd64 emulation). Stay below 2.4 to avoid
+# "cannot load module more than once per process" with torch’s import order.
 RUN python -m pip install -U pip \
  && if [ "$WITH_CUDA" = "1" ]; then \
       python -m pip install -r requirements-pytorch-cu128.txt; \
     fi \
  && python -m pip install -i "${PIP_INDEX_URL}" -r requirements.txt \
+ && python -m pip install -i "${PIP_INDEX_URL}" "numpy>=1.26.4,<2.2" \
  && if [ "$WITH_CUDA" = "1" ]; then \
       python -m pip install --force-reinstall --no-deps -r requirements-pytorch-cu128.txt; \
     fi

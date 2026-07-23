@@ -28,6 +28,7 @@ class DeviceResolution:
 
 
 def _load_torch():
+    import numpy  # noqa: F401
     import torch
 
     return torch

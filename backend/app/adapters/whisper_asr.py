@@ -41,6 +41,7 @@ def _load_model():
     if _MODEL is not None:
         return _MODEL
 
+    import numpy  # noqa: F401
     import whisper
 
     name = os.getenv("WHISPER_MODEL", "large-v3-turbo")

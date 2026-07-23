@@ -32,6 +32,9 @@ def separate_audio(
     demucs_path = _demucs_source_path()
     sys.path.insert(0, str(demucs_path))
 
+    # NumPy must finish Python-level init before torch; NumPy 2.4+ refuses a
+    # second C-extension init if torch’s C API touched it first.
+    import numpy  # noqa: F401
     from demucs.api import Separator, save_audio
 
     media_dir = session / "media"
