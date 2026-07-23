@@ -9,9 +9,9 @@
 **构建 / 运行：**
 
 ```bash
-# CPU（默认 DEVICE=cpu）
+# CPU：务必在 .env 里设 DEVICE=cpu（示例默认是 cuda，会覆盖镜像默认值）
 docker build -t youdub-webui .
-docker run --rm -p 3000:3000 --env-file .env \
+docker run --rm -p 3000:3000 --env-file .env -e DEVICE=cpu \
   -v "$PWD/workfolder:/app/workfolder" \
   -v "$PWD/data:/app/data" \
   youdub-webui
