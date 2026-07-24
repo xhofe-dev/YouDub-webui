@@ -5,8 +5,22 @@
 | `Dockerfile` | 多阶段构建：编译 Next.js + 安装 Python 依赖，同容器跑 API/Web |
 | `docker/entrypoint.sh` | 同时启动 uvicorn（8000）和 Next（3000） |
 | `.dockerignore` | 缩小构建上下文 |
+| `.github/workflows/docker-hub.yml` | 推送 CPU 镜像到 Docker Hub |
 
-**构建 / 运行：**
+**GitHub Actions → Docker Hub**
+
+在仓库 Settings → Secrets and variables → Actions 中配置：
+
+| Secret | 说明 |
+| --- | --- |
+| `DOCKERHUB_USERNAME` | Docker Hub 用户名 |
+| `DOCKERHUB_TOKEN` | Docker Hub Access Token（需有推送权限） |
+
+触发方式：`main` 推送 → `latest` + `sha-*******`；打 `v*` 标签 → semver 标签；也可手动 `workflow_dispatch`。
+
+镜像名：`<DOCKERHUB_USERNAME>/youdub-webui`（当前仅 `linux/amd64` CPU 构建）。
+
+**本地构建 / 运行：**
 
 ```bash
 # CPU：务必 DEVICE=cpu（示例 .env 默认是 cuda，会盖掉镜像默认值）
